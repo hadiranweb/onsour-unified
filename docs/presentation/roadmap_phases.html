@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=JetBrains+Mono&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: #E0E0E0;
+            color: #1A1A1A;
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            border: 2px solid #1A1A1A;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-section {
+            padding-top: 40px;
+            padding-left: 60px;
+            padding-right: 60px;
+            border-bottom: 1px solid #1A1A1A;
+            min-height: 120px;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            color: #1A1A1A;
+            text-transform: uppercase;
+        }
+
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            flex-grow: 1;
+        }
+
+        .phase-col {
+            padding-top: 40px;
+            padding-left: 30px;
+            padding-right: 30px;
+            border-right: 1px solid #1A1A1A;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .phase-col:last-child {
+            border-right: none;
+        }
+
+        .phase-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 64px;
+            color: #0047AB;
+            line-height: 1;
+            margin-bottom: 10px;
+            opacity: 0.3;
+        }
+
+        .label {
+            font-size: 14px;
+            color: #0047AB;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-bottom: 1px solid #0047AB;
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .phase-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1A1A1A;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .body-text {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #333333;
+            text-align: left;
+        }
+
+        .status-tag {
+            margin-top: auto;
+            padding-top: 20px;
+            font-size: 12px;
+            color: #0047AB;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-tag {
+            font-size: 12px;
+            padding-top: 20px;
+            padding-left: 60px;
+            border-top: 1px solid #1A1A1A;
+            min-height: 60px;
+            color: #1A1A1A;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <h2>07 // Roadmap: The Path to Convergence</h2>
+        </div>
+        <div class="roadmap-grid">
+            <div class="phase-col">
+                <div class="phase-number">01</div>
+                <div class="label">Infrastructure</div>
+                <div class="phase-title">Level 1 Deployment</div>
+                <div class="body-text">
+                    Establishment of the Unified Monorepo. Integration of the corrected Langevin Core and Island Runtime.
+                </div>
+                <div class="status-tag">[ COMPLETE ]</div>
+            </div>
+            <div class="phase-col">
+                <div class="phase-number">02</div>
+                <div class="label">Integration</div>
+                <div class="phase-title">Core Module Pilots</div>
+                <div class="body-text">
+                    Connecting OmniArch strategy to GenFlow-v2 execution. Launching Real World Asset (RWA) tokenization pilots.
+                </div>
+                <div class="status-tag">[ Q4 2026 ]</div>
+            </div>
+            <div class="phase-col">
+                <div class="phase-number">03</div>
+                <div class="label">Scaling</div>
+                <div class="phase-title">Synaptic Consensus</div>
+                <div class="body-text">
+                    Deployment of Proof of Trajectory (PoT) across multiple islands. High-throughput network synchronization.
+                </div>
+                <div class="status-tag">[ 2027 H1 ]</div>
+            </div>
+            <div class="phase-col">
+                <div class="phase-number">04</div>
+                <div class="label">Evolution</div>
+                <div class="phase-title">Decentralized Brain</div>
+                <div class="body-text">
+                    Full decentralization of ONSOUR nodes. Global convergence of stochastic digital organisms.
+                </div>
+                <div class="status-tag">[ 2027 VISION ]</div>
+            </div>
+        </div>
+        <div class="footer-tag">ONSOUR STRATEGIC SPEC // EVOLUTIONARY TIMELINE</div>
+    </div>
+</body>
+</html>

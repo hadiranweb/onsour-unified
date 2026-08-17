@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=JetBrains+Mono&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: #E0E0E0;
+            color: #1A1A1A;
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            border: 2px solid #1A1A1A;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-section {
+            padding-top: 40px;
+            padding-left: 60px;
+            padding-right: 60px;
+            border-bottom: 1px solid #1A1A1A;
+            min-height: 120px;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            color: #1A1A1A;
+            text-transform: uppercase;
+        }
+
+        .grid-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            flex-grow: 1;
+        }
+
+        .column {
+            padding-top: 40px;
+            padding-left: 60px;
+            padding-right: 60px;
+            border-right: 1px solid #1A1A1A;
+        }
+
+        .column:last-child {
+            border-right: none;
+            background: #FFFFFF;
+        }
+
+        .label {
+            font-size: 14px;
+            color: #0047AB;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .body-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333333;
+            text-align: left;
+        }
+
+        .code-box {
+            border: 1px solid #1A1A1A;
+            padding: 30px;
+            background: #F4F4F0;
+            font-size: 16px;
+            line-height: 1.4;
+            color: #1A1A1A;
+        }
+
+        .highlight {
+            color: #0047AB;
+            font-weight: bold;
+        }
+
+        .footer-tag {
+            font-size: 12px;
+            padding-top: 20px;
+            padding-left: 60px;
+            border-top: 1px solid #1A1A1A;
+            min-height: 60px;
+            color: #1A1A1A;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <h2>06 // Future-Proofing: Standardized Module API</h2>
+        </div>
+        <div class="grid-section">
+            <div class="column">
+                <div class="label">The Integration Protocol</div>
+                <div class="body-text">
+                    The ONSOUR infrastructure is built for <span class="highlight">infinite extensibility</span>. By standardizing the interface between the core and its modules, we ensure long-term stability.
+                    <br><br>
+                    <strong>Plug-and-Play:</strong> Add new domain-specific islands (Finance, Identity, RWA) without modifying the core runtime.
+                    <br><br>
+                    <strong>Developer Velocity:</strong> Build complex ecosystem features by implementing a single Rust Trait.
+                </div>
+            </div>
+            <div class="column">
+                <div class="label">Technical Anchor: OnsourModule Trait</div>
+                <div class="code-box">
+                    pub trait OnsourModule {<br>
+                    &nbsp;&nbsp;fn id(&self) -> &str;<br>
+                    &nbsp;&nbsp;fn init(&mut self);<br>
+                    &nbsp;&nbsp;fn on_converge(&mut self, state: &[f64]);<br>
+                    &nbsp;&nbsp;fn update(&mut self, dt: f64);<br>
+                    }
+                </div>
+                <div class="body-text" style="font-size: 14px; margin-top: 20px;">
+                    This abstraction layer decouples the <span class="highlight">Stochastic Engine</span> from domain logic, allowing the ecosystem to evolve from Level 1 to Global Convergence.
+                </div>
+            </div>
+        </div>
+        <div class="footer-tag">ONSOUR STRATEGIC SPEC // EXTENSIBILITY PROTOCOL</div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "backend/core",
+    "backend/runtime",
+    "backend/synaptic-hub",
+    "modules/*",
+]
+
+[workspace.package]
+version = "1.0.0"
+edition = "2021"
+authors = ["ONSOUR Development Team"]
+license = "MIT"
+
+[workspace.dependencies]
+tokio = { version = "1.0", features = ["full"] }
+rayon = "1.8"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+rand = "0.8"
+rand_distr = "0.4"
+log = "0.4"
+env_logger = "0.10"

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=JetBrains+Mono&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: #E0E0E0;
+            color: #1A1A1A;
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            border: 2px solid #1A1A1A;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-section {
+            padding-top: 40px;
+            padding-left: 60px;
+            padding-right: 60px;
+            border-bottom: 1px solid #1A1A1A;
+            min-height: 120px;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            color: #1A1A1A;
+            text-transform: uppercase;
+        }
+
+        .grid-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            flex-grow: 1;
+        }
+
+        .column {
+            padding-top: 40px;
+            padding-left: 40px;
+            padding-right: 40px;
+            border-right: 1px solid #1A1A1A;
+        }
+
+        .column:last-child {
+            border-right: none;
+        }
+
+        .label {
+            font-size: 14px;
+            color: #0047AB;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .feature-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: #1A1A1A;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .body-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333333;
+            text-align: left;
+        }
+
+        .mapping-tag {
+            display: inline-block;
+            font-size: 12px;
+            background: #1A1A1A;
+            color: #E0E0E0;
+            padding: 4px 8px;
+            margin-bottom: 20px;
+        }
+
+        .footer-tag {
+            font-size: 12px;
+            padding-top: 20px;
+            padding-left: 60px;
+            border-top: 1px solid #1A1A1A;
+            min-height: 60px;
+            color: #1A1A1A;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <h2>05 // Scalability: Solana-Inspired Innovation</h2>
+        </div>
+        <div class="grid-section">
+            <div class="column">
+                <div class="mapping-tag">SEALEVEL &rarr; ISLANDS</div>
+                <div class="label">Parallel Execution</div>
+                <div class="feature-title">Sealevel-Style Locking</div>
+                <div class="body-text">
+                    Implementation of non-blocking island updates. By identifying non-overlapping state dependencies, ONSOUR processes thousands of stochastic trajectories simultaneously across multi-core architectures.
+                </div>
+            </div>
+            <div class="column">
+                <div class="mapping-tag">POH &rarr; POT</div>
+                <div class="label">Consensus</div>
+                <div class="feature-title">Proof of Trajectory</div>
+                <div class="body-text">
+                    A verifiable cryptographic clock for stochastic states. Every Langevin update is part of a mathematically provable sequence, ensuring a deterministic history for a stochastic ecosystem.
+                </div>
+            </div>
+            <div class="column">
+                <div class="mapping-tag">GULF STREAM &rarr; RECEPTORS</div>
+                <div class="label">I/O Throughput</div>
+                <div class="feature-title">Gulf Stream Receptors</div>
+                <div class="body-text">
+                    Mempool-less event routing. External signals are pushed directly to scheduled "Leader Islands," minimizing feedback latency and maximizing the responsiveness of the digital organism.
+                </div>
+            </div>
+        </div>
+        <div class="footer-tag">ONSOUR STRATEGIC SPEC // ARCHITECTURAL SCALING</div>
+    </div>
+</body>
+</html>
