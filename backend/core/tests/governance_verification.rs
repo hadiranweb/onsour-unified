@@ -1,10 +1,11 @@
-use core_engine::{Node, ThermodynamicGovernor};
+use core_engine::{Node, ThermodynamicGovernor, SystemMetrics, LogicalTimestamp};
 
 #[test]
 fn test_entropy_filter_and_rollback() {
-    let mut governor = ThermodynamicGovernor::new(0.01); // Very strict epsilon
+    let mut governor = ThermodynamicGovernor::new(0.01, 0.005, 0.25, 0.3).unwrap(); 
+    let tick = LogicalTimestamp::new(0, 100);
+    let metrics = SystemMetrics::new(0.2, 0.2, 10.0, tick);
 
-    // Uniform state (low entropy)
     let current = vec![
         Node { theta: 0.1, e: 1.0, ec: 0.5, _padding: 0 },
         Node { theta: 0.1, e: 1.0, ec: 0.5, _padding: 0 },
@@ -12,25 +13,23 @@ fn test_entropy_filter_and_rollback() {
         Node { theta: 0.1, e: 1.0, ec: 0.5, _padding: 0 },
     ];
 
-    // Valid transition (stable)
-    let next_valid = vec![
+    let mut next_valid = vec![
         Node { theta: 0.11, e: 1.0, ec: 0.5, _padding: 0 },
         Node { theta: 0.11, e: 1.0, ec: 0.5, _padding: 0 },
         Node { theta: 0.11, e: 1.0, ec: 0.5, _padding: 0 },
         Node { theta: 0.11, e: 1.0, ec: 0.5, _padding: 0 },
     ];
 
-    assert!(governor.validate_transition(&current, &next_valid).is_ok());
+    let snapshot_valid = governor.apply_governance(&current, &mut next_valid, &metrics, tick, 1);
+    assert!(snapshot_valid.accepted);
 
-    // Highly dispersed state (high entropy spike)
-    let next_chaotic = vec![
+    let mut next_chaotic = vec![
         Node { theta: -0.9, e: 1.0, ec: 0.5, _padding: 0 },
         Node { theta: -0.3, e: 1.0, ec: 0.5, _padding: 0 },
         Node { theta: 0.3, e: 1.0, ec: 0.5, _padding: 0 },
         Node { theta: 0.9, e: 1.0, ec: 0.5, _padding: 0 },
     ];
 
-    let result = governor.validate_transition(&current, &next_chaotic);
-    assert!(result.is_err(), "Chaotic transition must trigger thermodynamic rollback");
-    println!("Successfully caught violation: {}", result.unwrap_err());
+    let snapshot_chaotic = governor.apply_governance(&current, &mut next_chaotic, &metrics, tick, 2);
+    assert!(!snapshot_chaotic.accepted, "Chaotic transition must be rejected");
 }
