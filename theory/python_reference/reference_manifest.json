@@ -1,0 +1,15 @@
+{
+  "spec_version": "0.4",
+  "frozen_date": "2026-07-17",
+  "files": {
+    "rts_reference_frozen_v0_4.py": {
+      "sha256": "e6e9497dccbe8eb0716a4bc29556775f1d50b1f4ea73e867b8a06462885f8166",
+      "frozen": true
+    },
+    "test_vectors.json": {
+      "sha256": "fd66803a736f380d105f5cc91fb35f5277d18f02d58b964eebf5994b79eaff4c",
+      "frozen": true
+    }
+  },
+  "invalidation_rule": "any change to frozen files requires version bump and full Track B/C rerun"
+}

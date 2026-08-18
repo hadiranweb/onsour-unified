@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=JetBrains+Mono&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: #E0E0E0;
+            color: #1A1A1A;
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            border: 2px solid #1A1A1A;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-section {
+            padding-top: 40px;
+            padding-left: 60px;
+            padding-right: 60px;
+            border-bottom: 1px solid #1A1A1A;
+            min-height: 120px;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            color: #1A1A1A;
+            text-transform: uppercase;
+        }
+
+        .grid-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            flex-grow: 1;
+        }
+
+        .column {
+            padding-top: 40px;
+            padding-left: 60px;
+            padding-right: 60px;
+            border-right: 1px solid #1A1A1A;
+        }
+
+        .column:last-child {
+            border-right: none;
+            background: #FFFFFF;
+        }
+
+        .label {
+            font-size: 14px;
+            color: #0047AB;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .arch-tree {
+            font-size: 16px;
+            line-height: 1.4;
+            color: #1A1A1A;
+            background: #F4F4F0;
+            padding: 20px;
+            border: 1px solid #1A1A1A;
+        }
+
+        .body-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333333;
+        }
+
+        .benefit-box {
+            border-top: 2px solid #0047AB;
+            margin-top: 30px;
+            padding-top: 20px;
+        }
+
+        .footer-tag {
+            font-size: 12px;
+            padding-top: 20px;
+            padding-left: 60px;
+            border-top: 1px solid #1A1A1A;
+            min-height: 60px;
+            color: #1A1A1A;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <h2>02 // The Solution: Unified Monorepo</h2>
+        </div>
+        <div class="grid-section">
+            <div class="column">
+                <div class="label">Ecosystem Architecture</div>
+                <div class="arch-tree">
+                    onsour-unified/<br>
+                    ├── strategy/ (OmniArch)<br>
+                    ├── theory/ (UIPT Core)<br>
+                    ├── runtime/ (Rust Workspace)<br>
+                    ├── platform/ (Islands/Nexus)<br>
+                    └── interface/ (Turborepo)
+                </div>
+                <div class="benefit-box">
+                    <div class="label" style="font-size: 12px;">Core Advantage</div>
+                    <div class="body-text">
+                        <strong>One Source of Truth</strong> for Strategy, Theory, and Execution.
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="label">Modern Tooling</div>
+                <div class="body-text">
+                    <strong>Rust Workspaces:</strong> High-performance, memory-safe backend management.
+                    <br><br>
+                    <strong>Turborepo:</strong> Agile, scalable frontend and contract orchestration.
+                </div>
+                <div class="benefit-box">
+                    <div class="label" style="font-size: 12px;">Operational Velocity</div>
+                    <div class="body-text">
+                        <strong>Atomic Updates:</strong> Theory changes automatically trigger validation and UI synchronization.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-tag">ONSOUR STRATEGIC SPEC // ARCHITECTURAL UNIFICATION</div>
+    </div>
+</body>
+</html>

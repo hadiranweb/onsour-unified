@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=JetBrains+Mono&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: #E0E0E0;
+            color: #1A1A1A;
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            border: 2px solid #1A1A1A;
+            position: relative;
+        }
+
+        .left-panel {
+            padding: 80px;
+            border-right: 1px solid #1A1A1A;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right-panel {
+            background-color: #1A1A1A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 80px;
+            line-height: 1;
+            color: #1A1A1A;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: #0047AB;
+            margin-bottom: 60px;
+            border-left: 4px solid #0047AB;
+            padding-left: 20px;
+        }
+
+        .presenter-info {
+            font-size: 18px;
+            color: #333333;
+            margin-top: auto;
+        }
+
+        .foundation-graphic {
+            width: 300px;
+            height: 300px;
+            border: 1px solid #0047AB;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .block {
+            background: #0047AB;
+            opacity: 0.8;
+        }
+
+        .block.accent {
+            background: #E0E0E0;
+        }
+
+        .tag {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            font-size: 12px;
+            color: #E0E0E0;
+            border: 1px solid #E0E0E0;
+            padding: 4px 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="left-panel">
+            <div class="presenter-info" style="margin-bottom: 20px; font-weight: bold;">[ ONSOUR STRATEGIC SPEC ]</div>
+            <h1>ONSOUR<br>Level 1<br>Infrastructure</h1>
+            <div class="subtitle">Building the Scalable Foundation for Stochastic Ecosystems</div>
+            <div class="presenter-info">
+                Presented by ONSOUR Architecture Team<br>
+                v1.0 Operational Ready
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="tag">INFRA-V1-2026</div>
+            <div class="foundation-graphic">
+                <div class="block"></div><div class="block"></div><div class="block accent"></div>
+                <div class="block accent"></div><div class="block"></div><div class="block"></div>
+                <div class="block"></div><div class="block accent"></div><div class="block"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

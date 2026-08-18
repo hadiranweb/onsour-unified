@@ -5,7 +5,7 @@ use std::time::Duration;
 fn bench_rts_core_v04(c: &mut Criterion) {
     // 1. core_scalar_latency_ns
     c.bench_function("core_scalar_latency", |b| {
-        let mut node = Node { theta: 0.1, e: 12.0, ec: 10.0 };
+        let mut node = Node { theta: 0.1, e: 12.0, ec: 10.0, _padding: 0 };
         b.iter(|| step_node(black_box(&mut node), black_box(0.5)))
     });
 
@@ -17,7 +17,7 @@ fn bench_rts_core_v04(c: &mut Criterion) {
     let edges_per_node = 4;
 
     for n in n_values {
-        let mut nodes = vec![Node { theta: 0.1, e: 12.0, ec: 10.0 }; n];
+        let mut nodes = vec![Node { theta: 0.1, e: 12.0, ec: 10.0, _padding: 0 }; n];
         let mut edges = Vec::new();
         for i in 0..n {
             for j in 1..=edges_per_node {
@@ -25,6 +25,7 @@ fn bench_rts_core_v04(c: &mut Criterion) {
                     src: i as u32,
                     dst: ((i + j) % n) as u32,
                     weight: 0.1,
+                    _padding: 0,
                 });
             }
         }

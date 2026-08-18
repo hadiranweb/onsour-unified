@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=JetBrains+Mono&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: #E0E0E0;
+            color: #1A1A1A;
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            border: 2px solid #1A1A1A;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+        }
+
+        .left-panel {
+            padding: 80px;
+            border-right: 1px solid #1A1A1A;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right-panel {
+            background-color: #1A1A1A;
+            color: #E0E0E0;
+            padding: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 64px;
+            line-height: 1.1;
+            color: #1A1A1A;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        .label {
+            font-size: 14px;
+            color: #0047AB;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .body-text {
+            font-size: 22px;
+            line-height: 1.6;
+            color: #333333;
+        }
+
+        .cta-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            color: #0047AB;
+            margin-bottom: 30px;
+        }
+
+        .next-steps {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #E0E0E0;
+            border-top: 1px solid #333333;
+            padding-top: 30px;
+        }
+
+        .footer-info {
+            margin-top: auto;
+            font-size: 12px;
+            color: #666666;
+            text-transform: uppercase;
+        }
+
+        .qa-tag {
+            font-size: 80px;
+            font-family: 'Playfair Display', serif;
+            opacity: 0.1;
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            color: #E0E0E0;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="left-panel">
+            <div class="label">Final Synthesis</div>
+            <h2>Join the<br>Convergence</h2>
+            <div class="body-text">
+                ONSOUR is the transformation of fragmented complexity into a <strong>unified digital organism</strong>. 
+                <br><br>
+                We have built the foundation. Now, we build the future.
+            </div>
+            <div class="footer-info">
+                ONSOUR STRATEGIC SPECIFICATION // FINAL RELEASE v1.0
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="cta-header">Next Steps</div>
+            <div class="next-steps">
+                1. Initialize the Monorepo Workspace<br>
+                2. Deploy the Langevin Core Engine<br>
+                3. Integrate Domain-Specific Islands<br>
+                4. Launch Proof of Trajectory Pilots
+            </div>
+            <div class="qa-tag">Q&A</div>
+        </div>
+    </div>
+</body>
+</html>
