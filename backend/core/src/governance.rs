@@ -18,41 +18,68 @@ impl Default for SystemMetrics {
     }
 }
 
-/// Thermodynamic Governance Engine with Dynamic Epsilon Adaptation
-/// Enforces the entropy constraint: H(S_{t+1}) <= H(S_t) + epsilon(load, latency)
+/// Thermodynamic Governance Engine with Dynamic Epsilon Adaptation & Robust Invariants
 pub struct ThermodynamicGovernor {
     pub base_epsilon: f32,
     pub min_epsilon: f32,
     pub max_epsilon: f32,
+    // EMA smoothing state
+    smoothed_load: f32,
+    smoothed_latency: f32,
+    alpha: f32, // Smoothing factor for EMA
 }
 
 impl ThermodynamicGovernor {
+    /// Creates a new governor with validated invariants
     pub fn new(base_epsilon: f32) -> Self {
-        Self {
-            base_epsilon,
-            min_epsilon: 0.005,
-            max_epsilon: 0.25,
-        }
+        Self::new_with_bounds(base_epsilon, 0.005, 0.25).unwrap()
     }
 
-    /// Computes dynamic epsilon based on real-time system metrics.
-    /// High load or high latency tightens epsilon (reduces allowable drift to prevent systemic instability).
-    /// Low load relaxes epsilon slightly to permit rapid state exploration.
-    pub fn compute_dynamic_epsilon(&self, metrics: &SystemMetrics) -> f32 {
-        // Load penalty factor
-        let load_factor = 0.5 * metrics.cpu_load + 0.5 * metrics.memory_pressure;
-        
-        // Latency penalty factor (normalized around 100ms)
-        let latency_factor = (metrics.network_latency_ms / 100.0).clamp(0.0, 2.0);
+    pub fn new_with_bounds(base_epsilon: f32, min_epsilon: f32, max_epsilon: f32) -> Result<Self, &'static str> {
+        if min_epsilon <= 0.0 || min_epsilon > base_epsilon || base_epsilon > max_epsilon {
+            return Err("GOVERNOR_INIT_ERROR: Invalid epsilon bounds. Must satisfy 0 < min_epsilon <= base_epsilon <= max_epsilon");
+        }
+        if !min_epsilon.is_finite() || !base_epsilon.is_finite() || !max_epsilon.is_finite() {
+            return Err("GOVERNOR_INIT_ERROR: Epsilon bounds must be finite numbers.");
+        }
 
-        // Combined penalty: higher load/latency -> smaller epsilon (stricter governance)
-        // Epsilon = Base * (1.0 - 0.4 * load) / (1.0 + 0.2 * latency)
+        Ok(Self {
+            base_epsilon,
+            min_epsilon,
+            max_epsilon,
+            smoothed_load: 0.5,
+            smoothed_latency: 20.0,
+            alpha: 0.2,
+        })
+    }
+
+    /// Computes dynamic epsilon with strict input validation, NaN/Inf checks, and EMA smoothing.
+    pub fn compute_dynamic_epsilon(&mut self, metrics: &SystemMetrics) -> f32 {
+        if !metrics.cpu_load.is_finite()
+            || !metrics.memory_pressure.is_finite()
+            || !metrics.network_latency_ms.is_finite()
+        {
+            return self.min_epsilon;
+        }
+
+        let cpu = metrics.cpu_load.clamp(0.0, 1.0);
+        let memory = metrics.memory_pressure.clamp(0.0, 1.0);
+        let latency_ms = metrics.network_latency_ms.max(0.0);
+
+        let raw_load = 0.5 * cpu + 0.5 * memory;
+
+        self.smoothed_load = self.alpha * raw_load + (1.0 - self.alpha) * self.smoothed_load;
+        self.smoothed_latency = self.alpha * latency_ms + (1.0 - self.alpha) * self.smoothed_latency;
+
+        let load_factor = self.smoothed_load;
+        let latency_factor = (self.smoothed_latency / 100.0).clamp(0.0, 2.0);
+
         let adjusted = self.base_epsilon * (1.0 - 0.4 * load_factor) / (1.0 + 0.2 * latency_factor);
 
         adjusted.clamp(self.min_epsilon, self.max_epsilon)
     }
 
-    /// Calculates the Shannon-like entropy of the activation states (theta) across nodes.
+    /// Calculates Shannon entropy of activation states (theta)
     pub fn calculate_entropy(&self, nodes: &[Node]) -> f32 {
         if nodes.is_empty() {
             return 0.0;
@@ -79,9 +106,8 @@ impl ThermodynamicGovernor {
         entropy
     }
 
-    /// Validates if the state transition from t to t+1 satisfies the governance rules using dynamic metrics.
     pub fn validate_transition_with_metrics(
-        &self,
+        &mut self,
         current_state: &[Node],
         next_state: &[Node],
         metrics: &SystemMetrics,
@@ -92,19 +118,18 @@ impl ThermodynamicGovernor {
 
         if h_next > h_current + epsilon {
             return Err(format!(
-                "THERMODYNAMIC_VIOLATION: Entropy change ({:.4}) exceeds dynamic epsilon ({:.4}) at CPU load {:.2}, latency {:.1}ms. Rollback triggered.",
+                "THERMODYNAMIC_VIOLATION: Entropy change ({:.4}) exceeds dynamic epsilon ({:.4}) under load {:.2}, latency {:.1}ms. Rollback triggered.",
                 h_next - h_current,
                 epsilon,
-                metrics.cpu_load,
-                metrics.network_latency_ms
+                self.smoothed_load,
+                self.smoothed_latency
             ));
         }
 
         Ok(epsilon)
     }
 
-    /// Backward compatible validation method using default metrics
-    pub fn validate_transition(&self, current_state: &[Node], next_state: &[Node]) -> Result<(), &'static str> {
+    pub fn validate_transition(&mut self, current_state: &[Node], next_state: &[Node]) -> Result<(), &'static str> {
         let default_metrics = SystemMetrics::default();
         self.validate_transition_with_metrics(current_state, next_state, &default_metrics)
             .map(|_| ())

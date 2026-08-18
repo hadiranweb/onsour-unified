@@ -2,7 +2,7 @@ use core_engine::{Node, ThermodynamicGovernor};
 
 #[test]
 fn test_entropy_filter_and_rollback() {
-    let governor = ThermodynamicGovernor::new(0.01); // Very strict epsilon
+    let mut governor = ThermodynamicGovernor::new(0.01); // Very strict epsilon
 
     // Uniform state (low entropy)
     let current = vec![

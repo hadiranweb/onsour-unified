@@ -1,4 +1,4 @@
-use rts_core::{Node, Edge, step_sparse, step_sparse_buffered, alpha};
+use core_engine::{Node, Edge, step_sparse, step_sparse_buffered, alpha};
 use serde::Deserialize;
 use std::fs;
 

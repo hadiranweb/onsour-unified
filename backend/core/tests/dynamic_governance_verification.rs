@@ -1,8 +1,13 @@
 use core_engine::{Node, ThermodynamicGovernor, SystemMetrics};
 
 #[test]
-fn test_dynamic_epsilon_adaptation() {
-    let governor = ThermodynamicGovernor::new(0.1);
+fn test_dynamic_epsilon_adaptation_and_robustness() {
+    let mut governor = ThermodynamicGovernor::new(0.1);
+
+    // Test constructor invariant validation
+    assert!(ThermodynamicGovernor::new_with_bounds(0.1, 0.2, 0.5).is_err(), "min > base must fail");
+    assert!(ThermodynamicGovernor::new_with_bounds(0.5, 0.1, 0.2).is_err(), "base > max must fail");
+    assert!(ThermodynamicGovernor::new_with_bounds(0.1, -0.1, 0.5).is_err(), "negative min must fail");
 
     // Normal metrics
     let normal_metrics = SystemMetrics {
@@ -11,7 +16,7 @@ fn test_dynamic_epsilon_adaptation() {
         network_latency_ms: 10.0,
     };
 
-    // Stressed metrics (high CPU & latency)
+    // Stressed metrics
     let stressed_metrics = SystemMetrics {
         cpu_load: 0.95,
         memory_pressure: 0.9,
@@ -22,11 +27,18 @@ fn test_dynamic_epsilon_adaptation() {
     let eps_stressed = governor.compute_dynamic_epsilon(&stressed_metrics);
 
     println!("Epsilon Normal: {}, Epsilon Stressed: {}", eps_normal, eps_stressed);
+    assert!(eps_stressed < eps_normal);
 
-    // Stressed epsilon must be significantly tighter (smaller) than normal epsilon
-    assert!(eps_stressed < eps_normal, "Stressed epsilon must be stricter under high load and latency");
+    // Test NaN / Inf fail-safe
+    let corrupted_metrics = SystemMetrics {
+        cpu_load: f32::NAN,
+        memory_pressure: 0.5,
+        network_latency_ms: 50.0,
+    };
+    let eps_corrupted = governor.compute_dynamic_epsilon(&corrupted_metrics);
+    assert_eq!(eps_corrupted, governor.min_epsilon, "Corrupted NaN telemetry must fallback to min_epsilon");
 
-    // Test transition under stress with a larger entropy spike
+    // Test transition under stress
     let current = vec![
         Node { theta: 0.1, e: 1.0, ec: 0.5, _padding: 0 },
         Node { theta: 0.1, e: 1.0, ec: 0.5, _padding: 0 },
@@ -34,7 +46,6 @@ fn test_dynamic_epsilon_adaptation() {
         Node { theta: 0.1, e: 1.0, ec: 0.5, _padding: 0 },
     ];
 
-    // High dispersion that creates an entropy spike exceeding eps_stressed (0.045)
     let next_state_chaotic = vec![
         Node { theta: -0.9, e: 1.0, ec: 0.5, _padding: 0 },
         Node { theta: -0.5, e: 1.0, ec: 0.5, _padding: 0 },
