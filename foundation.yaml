@@ -1,0 +1,24 @@
+version: "1.0.0"
+name: "onsour-unified"
+type: "foundation-level-1"
+
+architecture:
+  core: "backend/core"
+  runtime: "backend/runtime"
+  hub: "backend/synaptic-hub"
+
+standards:
+  rust_edition: "2021"
+  alignment: "32-byte"
+  concurrency: "lock-free-gather-apply"
+  determinism: "bit-exact-cross-thread"
+
+verification:
+  - "backend/core/tests/layout_verification.rs"
+  - "backend/core/tests/determinism_verification.rs"
+  - "backend/core/tests/statistical_validation.rs"
+
+deployment:
+  targets:
+    - native-linux-x86_64
+    - webassembly-wasm32

@@ -5,7 +5,6 @@ members = [
     "backend/core",
     "backend/runtime",
     "backend/synaptic-hub",
-    "modules/*",
 ]
 
 [workspace.package]

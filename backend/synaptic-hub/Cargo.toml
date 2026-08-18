@@ -1,0 +1,11 @@
+[package]
+name = "synaptic_hub"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+core_engine = { path = "../core" }
+island_runtime = { path = "../runtime" }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
