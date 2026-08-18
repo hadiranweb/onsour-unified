@@ -1,45 +1,45 @@
 use crate::state::Node;
-use std::time::{Instant, Duration};
 use serde::{Serialize, Deserialize};
 
-/// SystemMetrics with timestamp, refresh validation, and defensive clamping
+/// SystemMetrics using logical sequence ticks for serialization and replayability
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct SystemMetrics {
     pub cpu_load: f32,                    // Normalized 0.0 to 1.0
     pub memory_pressure: f32,            // Normalized 0.0 to 1.0
     pub network_latency_ms: f32,         // Milliseconds (must be >= 0)
-    #[serde(skip, default = "Instant::now")]
-    pub last_updated_at: Instant,        // Timestamp for refresh logic
+    pub timestamp_tick: u64,             // Logical tick for staleness check
 }
 
 impl SystemMetrics {
-    pub fn new(cpu_load: f32, memory_pressure: f32, network_latency_ms: f32) -> Self {
-        let cpu_load = cpu_load.max(0.0).min(1.0);
-        let memory_pressure = memory_pressure.max(0.0).min(1.0);
+    pub fn new(cpu_load: f32, memory_pressure: f32, network_latency_ms: f32, timestamp_tick: u64) -> Self {
+        let cpu_load = cpu_load.clamp(0.0, 1.0);
+        let memory_pressure = memory_pressure.clamp(0.0, 1.0);
         let network_latency_ms = network_latency_ms.max(0.0);
         
         SystemMetrics {
             cpu_load,
             memory_pressure,
             network_latency_ms,
-            last_updated_at: Instant::now(),
+            timestamp_tick,
         }
     }
 
-    pub fn needs_refresh(&self) -> bool {
-        self.last_updated_at.elapsed() > Duration::from_millis(500)
+    /// Check if telemetry is stale based on tick difference (e.g. max 50 ticks drift)
+    pub fn is_stale(&self, current_tick: u64, max_drift: u64) -> bool {
+        current_tick > self.timestamp_tick && (current_tick - self.timestamp_tick) > max_drift
     }
 }
 
-/// Snapshot of governance state for deterministic replay
+/// Authoritative snapshot for deterministic replay
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct GovernanceSnapshot {
-    pub metrics: SystemMetrics,
-    pub computed_epsilon: f32,
     pub epoch_id: u64,
+    pub authoritative_epsilon: f32,
+    pub smoothed_load: f32,
+    pub smoothed_latency: f32,
 }
 
-/// Thermodynamic Governance Engine with Production-Grade Safety, EMA Smoothing, and Invariant Checks
+/// Thermodynamic Governance Engine with Production-Grade Safety, EMA Smoothing, and Authoritative Replay
 pub struct ThermodynamicGovernor {
     pub base_epsilon: f32,
     pub min_epsilon: f32,
@@ -51,38 +51,45 @@ pub struct ThermodynamicGovernor {
 }
 
 impl ThermodynamicGovernor {
-    /// Backward compatible constructor
     pub fn new(base_epsilon: f32) -> Self {
-        Self::new_with_bounds(base_epsilon, 0.005, 0.25).unwrap()
+        Self::new_with_bounds(base_epsilon, 0.005, 0.25, 0.3).unwrap()
     }
 
-
-
-    pub fn new_with_bounds(base_epsilon: f32, min_epsilon: f32, max_epsilon: f32) -> Result<Self, &'static str> {
-        if !base_epsilon.is_finite() || !min_epsilon.is_finite() || !max_epsilon.is_finite() {
-            return Err("GOVERNOR_INIT_ERROR: Epsilon bounds must be finite numbers.");
+    pub fn new_with_bounds(
+        base_epsilon: f32,
+        min_epsilon: f32,
+        max_epsilon: f32,
+        ema_alpha: f32,
+    ) -> Result<Self, &'static str> {
+        if !base_epsilon.is_finite() || !min_epsilon.is_finite() || !max_epsilon.is_finite() || !ema_alpha.is_finite() {
+            return Err("GOVERNOR_INIT_ERROR: Parameters must be finite numbers.");
         }
         if min_epsilon <= 0.0 || min_epsilon > base_epsilon || base_epsilon > max_epsilon {
             return Err("GOVERNOR_INIT_ERROR: Invalid bounds. Expected 0 < min_epsilon <= base_epsilon <= max_epsilon");
+        }
+        if ema_alpha <= 0.0 || ema_alpha > 1.0 {
+            return Err("GOVERNOR_INIT_ERROR: EMA alpha must satisfy 0.0 < alpha <= 1.0");
         }
 
         Ok(Self {
             base_epsilon,
             min_epsilon,
             max_epsilon,
-            ema_alpha: 0.3,
+            ema_alpha,
             smoothed_load_factor: 0.0,
             smoothed_latency_factor: 0.0,
         })
     }
 
-    /// Computes dynamic epsilon with robust numerical guards and EMA smoothing
-    pub fn compute_dynamic_epsilon(&mut self, metrics: &SystemMetrics) -> f32 {
+    /// Computes dynamic epsilon with robust numerical guards, telemetry validation, and EMA smoothing
+    pub fn compute_dynamic_epsilon(&mut self, metrics: &SystemMetrics, current_tick: u64) -> f32 {
+        // Fail-safe under corrupt telemetry or stale data (> 50 ticks drift)
         if !metrics.cpu_load.is_finite()
             || !metrics.memory_pressure.is_finite()
             || !metrics.network_latency_ms.is_finite()
+            || metrics.is_stale(current_tick, 50)
         {
-            return self.min_epsilon; // Fail-safe under corrupt telemetry
+            return self.min_epsilon; 
         }
 
         let cpu = metrics.cpu_load.clamp(0.0, 1.0);
@@ -131,17 +138,18 @@ impl ThermodynamicGovernor {
         entropy
     }
 
-    /// Validates state transition with metrics and returns snapshot for deterministic replay
+    /// Validates state transition and produces an authoritative GovernanceSnapshot for replay
     pub fn validate_transition_with_snapshot(
         &mut self,
         current_state: &[Node],
         next_state: &[Node],
         metrics: &SystemMetrics,
+        current_tick: u64,
         epoch_id: u64,
     ) -> Result<GovernanceSnapshot, String> {
         let h_current = self.calculate_entropy(current_state);
         let h_next = self.calculate_entropy(next_state);
-        let epsilon = self.compute_dynamic_epsilon(metrics);
+        let epsilon = self.compute_dynamic_epsilon(metrics, current_tick);
 
         if h_next > h_current + epsilon {
             return Err(format!(
@@ -154,27 +162,17 @@ impl ThermodynamicGovernor {
         }
 
         Ok(GovernanceSnapshot {
-            metrics: *metrics,
-            computed_epsilon: epsilon,
             epoch_id,
+            authoritative_epsilon: epsilon,
+            smoothed_load: self.smoothed_load_factor,
+            smoothed_latency: self.smoothed_latency_factor,
         })
     }
 
     pub fn validate_transition(&mut self, current_state: &[Node], next_state: &[Node]) -> Result<(), &'static str> {
-        let default_metrics = SystemMetrics::default();
-        self.validate_transition_with_snapshot(current_state, next_state, &default_metrics, 0)
+        let default_metrics = SystemMetrics::new(0.5, 0.4, 20.0, 0);
+        self.validate_transition_with_snapshot(current_state, next_state, &default_metrics, 0, 0)
             .map(|_| ())
             .map_err(|_| "THERMODYNAMIC_VIOLATION: Entropy constraint exceeded under default metrics. Rollback triggered.")
-    }
-}
-
-impl Default for SystemMetrics {
-    fn default() -> Self {
-        Self {
-            cpu_load: 0.5,
-            memory_pressure: 0.4,
-            network_latency_ms: 20.0,
-            last_updated_at: Instant::now(),
-        }
     }
 }

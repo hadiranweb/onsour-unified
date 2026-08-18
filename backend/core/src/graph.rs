@@ -1,6 +1,7 @@
 use wasm_bindgen::prelude::*;
 use crate::state::{Node, Edge};
 use crate::math::step_node_math;
+use crate::governance::{ThermodynamicGovernor, SystemMetrics, GovernanceSnapshot};
 use rayon::prelude::*;
 
 /// Executes a sparse graph update using a Double Buffering model for correctness.
@@ -65,6 +66,33 @@ pub fn step_sparse_impl(nodes: &mut [Node], edges: &[Edge]) {
     let mut next_nodes = nodes.to_vec();
     step_sparse_buffered(nodes, &mut next_nodes, edges);
     nodes.copy_from_slice(&next_nodes);
+}
+
+/// Executes a governed graph update with Thermodynamic Governor validation and rollback
+pub fn step_governed_buffered(
+    current_nodes: &[Node],
+    next_nodes: &mut [Node],
+    edges: &[Edge],
+    governor: &mut ThermodynamicGovernor,
+    metrics: &SystemMetrics,
+    current_tick: u64,
+    epoch_id: u64,
+) -> Result<GovernanceSnapshot, String> {
+    // 1. Compute proposed state using standard buffered step
+    step_sparse_buffered(current_nodes, next_nodes, edges);
+
+    // 2. Validate transition against thermodynamic constraints (entropy filter)
+    match governor.validate_transition_with_snapshot(current_nodes, next_nodes, metrics, current_tick, epoch_id) {
+        Ok(snapshot) => {
+            // ACCEPT: next_nodes is valid, state transition proceeds
+            Ok(snapshot)
+        }
+        Err(violation_msg) => {
+            // ROLLBACK: abort state transition by reverting next_nodes to current_nodes
+            next_nodes.copy_from_slice(current_nodes);
+            Err(violation_msg)
+        }
+    }
 }
 
 #[wasm_bindgen]
